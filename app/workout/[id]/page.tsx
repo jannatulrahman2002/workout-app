@@ -1,3 +1,7 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { useState } from "react";
 import data from "../../data.json";
 import styles from "./page.module.css";
 
@@ -17,17 +21,15 @@ type Workout = {
   instructions: string[];
 };
 
-export default async function WorkoutDetails({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default function WorkoutDetails() {
+  const params = useParams<{ id: string }>();
+
+  const [message, setMessage] = useState("");
 
   const workouts = data as Workout[];
 
   const workout = workouts.find(
-    (item) => item.id === Number(id)
+    (item) => item.id === Number(params.id)
   );
 
   if (!workout) {
@@ -39,11 +41,75 @@ export default async function WorkoutDetails({
     );
   }
 
+  const addToPlan = () => {
+    const oldPlan = JSON.parse(
+      localStorage.getItem("todayPlan") || "[]"
+    );
+
+    const alreadyAdded = oldPlan.some(
+      (item: Workout) => item.id === workout.id
+    );
+
+    if (alreadyAdded) {
+      setMessage("Already added to today's plan");
+      return;
+    }
+
+    const newPlan = [...oldPlan, workout];
+
+    localStorage.setItem(
+      "todayPlan",
+      JSON.stringify(newPlan)
+    );
+
+    setMessage("Added to today's plan");
+
+    setTimeout(() => {
+      setMessage("");
+    }, 2500);
+  };
+
+  const saveForLater = () => {
+    const oldSaved = JSON.parse(
+      localStorage.getItem("savedWorkouts") || "[]"
+    );
+
+    const alreadySaved = oldSaved.some(
+      (item: Workout) => item.id === workout.id
+    );
+
+    if (alreadySaved) {
+      setMessage("Already saved");
+      return;
+    }
+
+    const newSaved = [...oldSaved, workout];
+
+    localStorage.setItem(
+      "savedWorkouts",
+      JSON.stringify(newSaved)
+    );
+
+    setMessage("Saved for later");
+
+    setTimeout(() => {
+      setMessage("");
+    }, 2500);
+  };
+
   return (
     <main className={styles.page}>
+
+      {/* TOAST */}
+      {message && (
+        <div className={styles.toast}>
+          {message}
+        </div>
+      )}
+
       <div className={styles.container}>
 
-        {/* LEFT SIDE - IMAGE */}
+        {/* LEFT SIDE */}
         <div className={styles.imageSection}>
           <img
             src={workout.image}
@@ -52,18 +118,16 @@ export default async function WorkoutDetails({
           />
         </div>
 
-        {/* RIGHT SIDE - DETAILS */}
+        {/* RIGHT SIDE */}
         <div className={styles.detailsSection}>
 
-          {/* TITLE */}
           <h1>{workout.name}</h1>
 
-          {/* DESCRIPTION */}
           <p className={styles.description}>
             {workout.description}
           </p>
 
-          {/* MUSCLE GROUPS */}
+          {/* TAGS */}
           <div className={styles.tags}>
             {workout.muscleGroups.map((muscle) => (
               <span key={muscle}>
@@ -72,7 +136,7 @@ export default async function WorkoutDetails({
             ))}
           </div>
 
-          {/* WORKOUT INFORMATION */}
+          {/* SPECS */}
           <div className={styles.specs}>
 
             <div className={styles.row}>
@@ -114,7 +178,6 @@ export default async function WorkoutDetails({
 
           {/* INSTRUCTIONS */}
           <div className={styles.instructions}>
-
             <h2>INSTRUCTIONS</h2>
 
             <ol>
@@ -126,17 +189,22 @@ export default async function WorkoutDetails({
                 )
               )}
             </ol>
-
           </div>
 
           {/* BUTTONS */}
           <div className={styles.buttons}>
 
-            <button className={styles.primaryButton}>
-              ✓ Add to today's plan
+            <button
+              className={styles.primaryButton}
+              onClick={addToPlan}
+            >
+              ✓ Add to today&apos;s plan
             </button>
 
-            <button className={styles.secondaryButton}>
+            <button
+              className={styles.secondaryButton}
+              onClick={saveForLater}
+            >
               ♡ Save for later
             </button>
 
