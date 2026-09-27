@@ -1,13 +1,10 @@
 import Image from "next/image";
 
-import Navbar from "./components/Navbar";
 import workouts from "./data.json";
-import Footer from "./components/Footer";
 export default function Home () {
   return (
     <>
   <main>
-    <Navbar />
     
 <section className="hero">
   <div className="hero-content">
@@ -92,7 +89,6 @@ into today's plan, and watch the week's work add up.
 
 
   </main>
-  <Footer />
   </>
   );
 }
