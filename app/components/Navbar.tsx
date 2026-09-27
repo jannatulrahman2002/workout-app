@@ -19,13 +19,9 @@ export default function Navbar() {
      
       <div className="nav-menu">
 
-        <a href="#" className="nav-link active">
-          Workouts
-        </a>
+        <Link href="/" className="nav-link active">Workouts</Link>
 
-        <a href="#" className="nav-link">
-          My Plan
-        </a>
+        <Link href="/my-plan" className="nav-link">My Plan</Link>
 
       </div>
 

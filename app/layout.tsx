@@ -1,6 +1,7 @@
+import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import "./globals.css";
+import { WorkoutProvider } from "./components/WorkoutContext";
 
 export default function RootLayout({
   children,
@@ -10,11 +11,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
+        <WorkoutProvider>
+          <Navbar />
 
-        {children}
+          {children}
 
-        <Footer />
+          <Footer />
+        </WorkoutProvider>
       </body>
     </html>
   );

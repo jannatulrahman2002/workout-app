@@ -1,209 +1,244 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { useWorkout } from "@/app/components/WorkoutContext";
+import workoutsData from "@/app/data.json";
 import styles from "./page.module.css";
 
 type Workout = {
   id: number;
   name: string;
+  category?: string;
   image: string;
-  equipment: string;
-  duration: number;
-  caloriesBurned: number;
-  rating: number;
+  duration?: number;
+  minutes?: number;
+  calories?: number;
+  rating?: number;
 };
 
+const workouts = workoutsData as Workout[];
+
 export default function MyPlan() {
+  const {
+    planIds,
+    savedIds,
+    removeFromPlan,
+    toggleSaved,
+  } = useWorkout();
+
   const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [savedWorkouts, setSavedWorkouts] = useState<Workout[]>([]);
+  const [doneIds, setDoneIds] = useState<number[]>([]);
 
-  useEffect(() => {
-    const plan = localStorage.getItem("todayPlan");
-    const saved = localStorage.getItem("savedWorkouts");
+  // Today's Plan
+  const todayWorkouts = useMemo(() => {
+    return workouts.filter((workout) =>
+      planIds.includes(workout.id)
+    );
+  }, [planIds]);
 
-    if (plan) {
-      setWorkouts(JSON.parse(plan));
-    }
+  // Saved
+  const savedWorkouts = useMemo(() => {
+    return workouts.filter((workout) =>
+      savedIds.includes(workout.id)
+    );
+  }, [savedIds]);
 
-    if (saved) {
-      setSavedWorkouts(JSON.parse(saved));
-    }
-  }, []);
+  // Which list will show
+  const displayedWorkouts =
+    activeTab === "plan" ? todayWorkouts : savedWorkouts;
 
-  const currentWorkouts =
-    activeTab === "plan" ? workouts : savedWorkouts;
-
-  const totalMinutes = currentWorkouts.reduce(
-    (total, workout) => total + workout.duration,
+  // Stats
+  const totalMinutes = displayedWorkouts.reduce(
+    (total, workout) =>
+      total + Number(workout.duration ?? workout.minutes ?? 0),
     0
   );
 
-  const totalCalories = currentWorkouts.reduce(
-    (total, workout) => total + workout.caloriesBurned,
+  const totalCalories = displayedWorkouts.reduce(
+    (total, workout) =>
+      total + Number(workout.calories ?? 0),
     0
   );
 
-  const removeWorkout = (id: number) => {
+  const markAsDone = (id: number) => {
+    setDoneIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id]
+    );
+  };
+
+  const handleRemove = (id: number) => {
     if (activeTab === "plan") {
-      const updated = workouts.filter((workout) => workout.id !== id);
-
-      setWorkouts(updated);
-      localStorage.setItem("todayPlan", JSON.stringify(updated));
+      removeFromPlan(id);
     } else {
-      const updated = savedWorkouts.filter(
-        (workout) => workout.id !== id
-      );
-
-      setSavedWorkouts(updated);
-      localStorage.setItem("savedWorkouts", JSON.stringify(updated));
+      toggleSaved(id);
     }
   };
 
   return (
     <main className={styles.page}>
-      <div className={styles.container}>
 
-        {/* HEADER */}
-        <section className={styles.header}>
-          <h1>MY PLAN</h1>
+      {/* HEADER */}
+      <section className={styles.header}>
+        <h1>MY PLAN</h1>
 
-          <p>
-            Cap of five lifts for today. Finish them, then load more.
-          </p>
-        </section>
+        <p>
+          Keep track of your workouts and saved exercises.
+        </p>
+      </section>
 
-        {/* METRICS */}
-        <section className={styles.metrics}>
+      {/* STATS */}
+      <section className={styles.stats}>
 
-          <div className={styles.metricCard}>
-            <span>Exercises</span>
-            <strong>{workouts.length}</strong>
-          </div>
+        <div className={styles.statBox}>
+          <span>Exercises</span>
+          <strong>{displayedWorkouts.length}</strong>
+        </div>
 
-          <div className={styles.metricCard}>
-            <span>Minutes</span>
-            <strong>{totalMinutes}</strong>
-          </div>
+        <div className={styles.statBox}>
+          <span>Minutes</span>
+          <strong>{totalMinutes}</strong>
+        </div>
 
-          <div className={styles.metricCard}>
-            <span>Calories</span>
-            <strong>{totalCalories}</strong>
-          </div>
+        <div className={styles.statBox}>
+          <span>Calories</span>
+          <strong>{totalCalories}</strong>
+        </div>
 
-        </section>
+      </section>
 
-        {/* TABS */}
-        <div className={styles.tabArea}>
+      {/* TABS + SORT */}
+      <div className={styles.toolbar}>
 
-          <div className={styles.tabs}>
+        <div className={styles.tabs}>
 
-            <button
-              className={
-                activeTab === "plan"
-                  ? styles.activeTab
-                  : styles.tab
-              }
-              onClick={() => setActiveTab("plan")}
-            >
-              Today's Plan
-            </button>
+          <button
+            className={
+              activeTab === "plan"
+                ? styles.activeTab
+                : styles.tab
+            }
+            onClick={() => setActiveTab("plan")}
+          >
+            Today's Plan
+          </button>
 
-            <button
-              className={
-                activeTab === "saved"
-                  ? styles.activeTab
-                  : styles.tab
-              }
-              onClick={() => setActiveTab("saved")}
-            >
-              Saved
-            </button>
-
-          </div>
-
-          {/* SORT */}
-          <div className={styles.sort}>
-            <span>Sort By</span>
-
-            <select>
-              <option>Duration</option>
-              <option>Calories</option>
-              <option>Rating</option>
-            </select>
-          </div>
+          <button
+            className={
+              activeTab === "saved"
+                ? styles.activeTab
+                : styles.tab
+            }
+            onClick={() => setActiveTab("saved")}
+          >
+            Saved
+          </button>
 
         </div>
 
-        {/* WORKOUT LIST */}
-        <section className={styles.workoutList}>
+        <div className={styles.sort}>
+          <span>Sort By</span>
+          <select defaultValue="duration">
+            <option value="duration">Duration</option>
+            <option value="calories">Calories</option>
+            <option value="rating">Rating</option>
+          </select>
+        </div>
 
-          {currentWorkouts.length === 0 ? (
+      </div>
 
-            <div className={styles.emptyState}>
+      {/* WORKOUT LIST */}
+      <section className={styles.workoutList}>
 
-              <h2>NOTHING HERE YET</h2>
+        {displayedWorkouts.length === 0 ? (
+          <div className={styles.empty}>
 
-              <p>
-                Browse the library and add a lift to get today moving.
-              </p>
+            <h2>NOTHING HERE YET</h2>
 
-              <a href="/" className={styles.cta}>
-                Go to workouts
-              </a>
+            <p>
+              Browse the library and add workouts to get started.
+            </p>
 
-            </div>
+            <Link href="/" className={styles.goButton}>
+              Go to workouts
+            </Link>
 
-          ) : (
+          </div>
+        ) : (
+          displayedWorkouts.map((workout) => {
 
-            currentWorkouts.map((workout) => (
+            const isDone = doneIds.includes(workout.id);
 
+            return (
               <div
+                className={`${styles.card} ${
+                  isDone ? styles.completed : ""
+                }`}
                 key={workout.id}
-                className={styles.workoutCard}
               >
 
-                <img
-                  src={workout.image}
-                  alt={workout.name}
-                />
+                {/* IMAGE */}
+                <div className={styles.imageBox}>
+                  <img
+                    src={workout.image}
+                    alt={workout.name}
+                  />
+                </div>
 
-                <div className={styles.workoutInfo}>
+                {/* INFO */}
+                <div className={styles.info}>
 
                   <h3>{workout.name}</h3>
 
-                  <p>{workout.equipment}</p>
+                  <p className={styles.category}>
+                    {workout.category || "Workout"}
+                  </p>
 
-                  <div className={styles.stats}>
+                  <div className={styles.meta}>
 
                     <span>
-                      ⏱ {workout.duration} min
+                      ◷ {workout.duration ?? workout.minutes ?? 0} min
                     </span>
 
                     <span>
-                      🔥 {workout.caloriesBurned} kcal
+                      🔥 {workout.calories ?? 0} kcal
                     </span>
 
                     <span>
-                      ★ {workout.rating}
+                      ★ {workout.rating ?? "4.5"}
                     </span>
 
                   </div>
 
                 </div>
 
+                {/* ACTIONS */}
                 <div className={styles.actions}>
 
-                  <a
+                  <Link
                     href={`/workout/${workout.id}`}
-                    className={styles.detailsBtn}
+                    className={styles.detailsButton}
                   >
                     View Details
-                  </a>
+                  </Link>
 
                   <button
-                    onClick={() => removeWorkout(workout.id)}
-                    className={styles.removeBtn}
+                    className={
+                      isDone
+                        ? styles.doneButton
+                        : styles.markButton
+                    }
+                    onClick={() => markAsDone(workout.id)}
+                  >
+                    {isDone ? "✓ Done" : "✓ Mark as Done"}
+                  </button>
+
+                  <button
+                    className={styles.removeButton}
+                    onClick={() => handleRemove(workout.id)}
+                    aria-label={`Remove ${workout.name}`}
                   >
                     ×
                   </button>
@@ -211,14 +246,12 @@ export default function MyPlan() {
                 </div>
 
               </div>
+            );
+          })
+        )}
 
-            ))
+      </section>
 
-          )}
-
-        </section>
-
-      </div>
     </main>
   );
 }

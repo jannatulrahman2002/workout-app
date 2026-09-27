@@ -1,5 +1,5 @@
 import Image from "next/image";
-
+import Link from "next/link";
 import workouts from "./data.json";
 export default function Home () {
   return (
@@ -46,42 +46,46 @@ into today's plan, and watch the week's work add up.
 
   <div className="workout-grid">
 
-    {workouts.map((workout) => (
-      <article className="workout-card" key={workout.id}>
+     {workouts.map((workout) => (
+  <Link key={workout.id}
+    href={`/workout/${workout.id}`}
+    className="workout-card"
+  >
 
-        <div className="workout-image">
-          <img
-            src={workout.image}
-            alt={workout.name}
-          />
-        </div>
+    <div className="workout-image">
+      <img
+        src={workout.image}
+        alt={workout.name}
+      />
+    </div>
 
-        <div className="workout-info">
+    <div className="workout-info">
 
-          <div className="muscle-tags">
-            {workout.muscleGroups.map((muscle) => (
-              <span key={muscle}>
-                {muscle}
-              </span>
-            ))}
-          </div>
+      <div className="muscle-tags">
+        {workout.muscleGroups.map((muscle) => (
+          <span key={muscle}>
+            {muscle}
+          </span>
+        ))}
+      </div>
 
-          <h3>{workout.name}</h3>
+      <h3>{workout.name}</h3>
 
-          <p className="equipment">
-            {workout.equipment}
-          </p>
+      <p className="equipment">
+        {workout.equipment}
+      </p>
 
-          <div className="workout-meta">
-            <span>◷ {workout.duration} min</span>
-            <span>◉ {workout.caloriesBurned} kcal</span>
-            <span>★ {workout.rating}</span>
-          </div>
+      <div className="workout-meta">
+        <span>{workout.duration} min</span>
+        <span>{workout.caloriesBurned} kcal</span>
+        <span>{workout.rating}</span>
+      </div>
 
-        </div>
+    </div>
 
-      </article>
-    ))}
+  </Link>
+))} 
+    
 
   </div>
 
