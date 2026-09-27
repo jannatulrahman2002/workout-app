@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import data from "../../data.json";
+import { useWorkout } from "@/app/components/WorkoutContext";
 import styles from "./page.module.css";
 
 type Workout = {
@@ -24,6 +25,9 @@ type Workout = {
 export default function WorkoutDetails() {
   const params = useParams<{ id: string }>();
 
+  const { planIds, savedIds, addToPlan, toggleSaved } =
+    useWorkout();
+
   const [message, setMessage] = useState("");
 
   const workouts = data as Workout[];
@@ -41,56 +45,31 @@ export default function WorkoutDetails() {
     );
   }
 
-  const addToPlan = () => {
-    const oldPlan = JSON.parse(
-      localStorage.getItem("todayPlan") || "[]"
-    );
-
-    const alreadyAdded = oldPlan.some(
-      (item: Workout) => item.id === workout.id
-    );
-
-    if (alreadyAdded) {
+  // ADD TO TODAY'S PLAN
+  const handleAddToPlan = () => {
+    if (planIds.includes(workout.id)) {
       setMessage("Already added to today's plan");
-      return;
+    } else {
+      addToPlan(workout.id);
+      setMessage("Added to today's plan");
     }
-
-    const newPlan = [...oldPlan, workout];
-
-    localStorage.setItem(
-      "todayPlan",
-      JSON.stringify(newPlan)
-    );
-
-    setMessage("Added to today's plan");
 
     setTimeout(() => {
       setMessage("");
     }, 2500);
   };
 
-  const saveForLater = () => {
-    const oldSaved = JSON.parse(
-      localStorage.getItem("savedWorkouts") || "[]"
-    );
+  // SAVE FOR LATER
+  const handleSaveForLater = () => {
+    const alreadySaved = savedIds.includes(workout.id);
 
-    const alreadySaved = oldSaved.some(
-      (item: Workout) => item.id === workout.id
-    );
+    toggleSaved(workout.id);
 
     if (alreadySaved) {
-      setMessage("Already saved");
-      return;
+      setMessage("Removed from saved");
+    } else {
+      setMessage("Saved for later");
     }
-
-    const newSaved = [...oldSaved, workout];
-
-    localStorage.setItem(
-      "savedWorkouts",
-      JSON.stringify(newSaved)
-    );
-
-    setMessage("Saved for later");
 
     setTimeout(() => {
       setMessage("");
@@ -196,16 +175,18 @@ export default function WorkoutDetails() {
 
             <button
               className={styles.primaryButton}
-              onClick={addToPlan}
+              onClick={handleAddToPlan}
             >
               ✓ Add to today&apos;s plan
             </button>
 
             <button
               className={styles.secondaryButton}
-              onClick={saveForLater}
+              onClick={handleSaveForLater}
             >
-              ♡ Save for later
+              {savedIds.includes(workout.id)
+                ? "♥ Saved"
+                : "♡ Save for later"}
             </button>
 
           </div>

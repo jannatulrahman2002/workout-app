@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@plugin "daisyui";
+
 * {
   background-color: #11131b;
 }
@@ -529,3 +529,146 @@
   color: #94a3b8;
   font-size: 12px;
 }
+/* Tablet */
+
+@media (max-width: 1024px) {
+
+  .library-section {
+    max-width: 100%;
+    padding: 40px 24px 60px;
+    box-sizing: border-box;
+  }
+
+  .workout-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .workout-image {
+    height: 160px;
+  }
+
+  .workout-info {
+    padding: 13px;
+  }
+
+  .workout-info h3 {
+    font-size: 14px;
+  }
+
+  .footer {
+    min-height: 75px;
+    padding: 0 24px;
+  }
+
+}
+
+/* Mobile  */
+@media (max-width: 600px) {
+
+  .library-section {
+    width: 100%;
+    padding: 30px 16px 50px;
+    box-sizing: border-box;
+  }
+
+  .library-header {
+    margin-bottom: 18px;
+  }
+
+  .library-header h2 {
+    font-size: 21px;
+  }
+
+  .library-header p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+
+  /* Workout Cards */
+
+  .workout-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .workout-card {
+    width: 100%;
+  }
+
+  .workout-image {
+    height: 190px;
+  }
+
+  .workout-info {
+    padding: 13px;
+  }
+
+
+  /* Muscle Tags */
+
+  .muscle-tags {
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  .muscle-tags span {
+    padding: 4px 8px;
+    font-size: 8px;
+  }
+
+
+  /* Workout Name */
+
+  .workout-info h3 {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+
+  /* Equipment */
+
+  .equipment {
+    margin: 4px 0 12px;
+    font-size: 10px;
+  }
+
+
+  /* Workout Meta */
+
+  .workout-meta {
+    gap: 9px;
+    padding-top: 9px;
+    font-size: 9px;
+    flex-wrap: wrap;
+  }
+
+
+  /* Footer */
+
+  .footer {
+    min-height: auto;
+    padding: 20px 16px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-size: 13px;
+  }
+
+  .footer-logo span {
+    font-size: 17px;
+  }
+
+  .footer p {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+}
+
+

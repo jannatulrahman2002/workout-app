@@ -13,67 +13,118 @@ type Workout = {
   image: string;
   duration?: number;
   minutes?: number;
-  calories?: number;
+  caloriesBurned?: number;
   rating?: number;
 };
 
 const workouts = workoutsData as Workout[];
 
+type SortOption = "duration" | "calories" | "rating";
+
 export default function MyPlan() {
   const {
     planIds,
     savedIds,
+    doneIds,
     removeFromPlan,
     toggleSaved,
+    toggleDone,
   } = useWorkout();
 
   const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
-  const [doneIds, setDoneIds] = useState<number[]>([]);
+  const [sortBy, setSortBy] = useState<SortOption>("duration");
+  const [toast, setToast] = useState("");
 
   // Today's Plan
   const todayWorkouts = useMemo(() => {
-    return workouts.filter((workout) =>
-      planIds.includes(workout.id)
-    );
+    return workouts.filter((workout) => planIds.includes(workout.id));
   }, [planIds]);
 
-  // Saved
+  // Saved Workouts
   const savedWorkouts = useMemo(() => {
-    return workouts.filter((workout) =>
-      savedIds.includes(workout.id)
-    );
+    return workouts.filter((workout) => savedIds.includes(workout.id));
   }, [savedIds]);
 
-  // Which list will show
-  const displayedWorkouts =
-    activeTab === "plan" ? todayWorkouts : savedWorkouts;
+  // Active list
+  const displayedWorkouts = useMemo(() => {
+    const list =
+      activeTab === "plan" ? todayWorkouts : savedWorkouts;
+
+    return [...list].sort((a, b) => {
+      if (sortBy === "duration") {
+        return (
+          Number(a.duration ?? a.minutes ?? 0) -
+          Number(b.duration ?? b.minutes ?? 0)
+        );
+      }
+
+      if (sortBy === "calories") {
+        return (
+          Number(b.caloriesBurned ?? 0) -
+          Number(a.caloriesBurned?? 0)
+        );
+      }
+
+      if (sortBy === "rating") {
+        return (
+          Number(b.rating ?? 0) -
+          Number(a.rating ?? 0)
+        );
+      }
+
+      return 0;
+    });
+  }, [
+    activeTab,
+    todayWorkouts,
+    savedWorkouts,
+    sortBy,
+  ]);
 
   // Stats
   const totalMinutes = displayedWorkouts.reduce(
     (total, workout) =>
-      total + Number(workout.duration ?? workout.minutes ?? 0),
+      total +
+      Number(workout.duration ?? workout.minutes ?? 0),
     0
   );
 
   const totalCalories = displayedWorkouts.reduce(
     (total, workout) =>
-      total + Number(workout.calories ?? 0),
+      total + Number(workout.caloriesBurned ?? 0),
     0
   );
 
-  const markAsDone = (id: number) => {
-    setDoneIds((prev) =>
-      prev.includes(id)
-        ? prev.filter((item) => item !== id)
-        : [...prev, id]
-    );
+  // Toast
+  const showToast = (message: string) => {
+    setToast(message);
+
+    setTimeout(() => {
+      setToast("");
+    }, 2500);
   };
 
-  const handleRemove = (id: number) => {
+  // Mark as Done
+  const markAsDone = (id: number) => {
+    const alreadyDone = doneIds.includes(id);
+
+    toggleDone(id);
+
+    if (alreadyDone) {
+      showToast("Workout marked as not done.");
+    } else {
+      showToast("Workout marked as done!");
+    }
+  };
+
+  // Remove
+  const handleRemove = (id: number, name: string) => {
     if (activeTab === "plan") {
       removeFromPlan(id);
+      showToast(`${name} removed from today's plan.`);
     } else {
       toggleSaved(id);
+      showToast(`${name} removed from saved.`);
     }
   };
 
@@ -138,9 +189,16 @@ export default function MyPlan() {
 
         </div>
 
+        {/* SORT */}
         <div className={styles.sort}>
           <span>Sort By</span>
-          <select defaultValue="duration">
+
+          <select
+            value={sortBy}
+            onChange={(e) =>
+              setSortBy(e.target.value as SortOption)
+            }
+          >
             <option value="duration">Duration</option>
             <option value="calories">Calories</option>
             <option value="rating">Rating</option>
@@ -161,7 +219,10 @@ export default function MyPlan() {
               Browse the library and add workouts to get started.
             </p>
 
-            <Link href="/" className={styles.goButton}>
+            <Link
+              href="/"
+              className={styles.goButton}
+            >
               Go to workouts
             </Link>
 
@@ -173,10 +234,10 @@ export default function MyPlan() {
 
             return (
               <div
+                key={workout.id}
                 className={`${styles.card} ${
                   isDone ? styles.completed : ""
                 }`}
-                key={workout.id}
               >
 
                 {/* IMAGE */}
@@ -199,15 +260,19 @@ export default function MyPlan() {
                   <div className={styles.meta}>
 
                     <span>
-                      ◷ {workout.duration ?? workout.minutes ?? 0} min
+                      ◷{" "}
+                      {workout.duration ??
+                        workout.minutes ??
+                        0}{" "}
+                      min
                     </span>
 
                     <span>
-                      🔥 {workout.calories ?? 0} kcal
+                      🔥 {workout.caloriesBurned ?? 0} kcal
                     </span>
 
                     <span>
-                      ★ {workout.rating ?? "4.5"}
+                      ★ {workout.rating ?? 4.5}
                     </span>
 
                   </div>
@@ -224,20 +289,33 @@ export default function MyPlan() {
                     View Details
                   </Link>
 
-                  <button
-                    className={
-                      isDone
-                        ? styles.doneButton
-                        : styles.markButton
-                    }
-                    onClick={() => markAsDone(workout.id)}
-                  >
-                    {isDone ? "✓ Done" : "✓ Mark as Done"}
-                  </button>
+                  {/* MARK AS DONE */}
+                  {activeTab === "plan" && (
+                    <button
+                      className={
+                        isDone
+                          ? styles.doneButton
+                          : styles.markButton
+                      }
+                      onClick={() =>
+                        markAsDone(workout.id)
+                      }
+                    >
+                      {isDone
+                        ? "✓ Done"
+                        : "✓ Mark as Done"}
+                    </button>
+                  )}
 
+                  {/* REMOVE */}
                   <button
                     className={styles.removeButton}
-                    onClick={() => handleRemove(workout.id)}
+                    onClick={() =>
+                      handleRemove(
+                        workout.id,
+                        workout.name
+                      )
+                    }
                     aria-label={`Remove ${workout.name}`}
                   >
                     ×
@@ -251,6 +329,13 @@ export default function MyPlan() {
         )}
 
       </section>
+
+      {/* TOAST */}
+      {toast && (
+        <div className={styles.toast}>
+          {toast}
+        </div>
+      )}
 
     </main>
   );
