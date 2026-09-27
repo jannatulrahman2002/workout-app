@@ -1,0 +1,531 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+* {
+  background-color: #11131b;
+}
+/* Navbar */
+
+.navbar {
+  width: 100%;
+  height: 64px;
+
+  padding: 0 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #11131b;
+
+  border: 1px solid #242733;
+  border-radius: 8px;
+
+  color: #ffffff;
+
+  position: relative;
+}
+
+
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.nav-logo-image {
+  width: 30px;
+  height: auto;
+
+  display: block;
+
+  object-fit: contain;
+}
+.logo-text {
+  color: #fffffff;
+  font-size : 14px;
+  font-weight :800
+  
+
+}
+
+
+
+.nav-menu {
+  position: absolute;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+
+
+.nav-link {
+  text-decoration: none;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  padding: 10px 16px;
+
+  border-radius: 20px;
+
+  transition: all 0.2s ease;
+}
+
+
+
+
+.nav-link.active {
+  background: #1A2312;
+
+  color: #C2F800;
+}
+
+
+
+
+.nav-link:not(.active):hover {
+  background: #242733;
+}
+
+
+
+.nav-right {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+
+/* Plan / Saved */
+
+.nav-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+.status-number {
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #dfff00;
+
+  color: #11131b;
+
+  font-size: 11px;
+
+  font-weight: 800;
+}
+
+
+.status-number.dark {
+  background: #292c36;
+
+  color: #ffffff;
+}
+
+
+/* Tablet */
+
+@media (max-width: 900px) {
+
+  .navbar {
+    padding: 0 20px;
+  }
+
+  .nav-logo-image {
+    width: 85px;
+  }
+
+  .nav-link {
+    font-size: 12px;
+
+    padding: 9px 13px;
+  }
+
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+  .navbar {
+    height: 58px;
+
+    padding: 0 14px;
+
+    border-radius: 6px;
+  }
+
+  .nav-logo-image {
+    width: 75px;
+  }
+
+  .nav-menu {
+    position: static;
+
+    transform: none;
+
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .nav-link {
+    font-size: 10px;
+
+    padding: 7px 9px;
+  }
+
+  .nav-right {
+    gap: 6px;
+  }
+
+  .nav-status {
+    font-size: 10px;
+
+    gap: 4px;
+  }
+
+  .status-number {
+    width: 17px;
+    height: 17px;
+
+    font-size: 9px;
+  }
+
+}
+
+/* Banner  */
+.hero {
+  width: 100%;
+  padding: 20px ;
+  box-sizing: border-box;
+  margin: 5px;
+}
+
+.hero-content {
+  width: 100%;
+  max-width: 1500px;
+  min-height: 448px;
+
+  margin: 0 auto;
+  padding: 35px 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  background: #15171d;
+  border: 1px solid #292d3d;
+  border-radius: 12px;
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.hero-text {
+  flex: 1;
+  max-width: 620px;
+  background: transparent;
+}
+
+.hero-image {
+  width: 420px;
+  height: 420px;
+
+  object-fit: contain;
+  flex-shrink: 0;
+
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.hero-label {
+  display: block;
+  margin-bottom: 14px;
+
+  color: #dfff00;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hero h1 {
+  margin: 0 0 18px;
+
+  color: #fff;
+  font-size: 48px;
+  line-height: 1.05;
+  font-weight: 800;
+}
+
+.hero p {
+  max-width: 520px;
+  margin: 0 0 24px;
+
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.hero-button {
+  border: none;
+  border-radius: 6px;
+
+  padding: 12px 20px;
+
+  background: #dfff00;
+  color: #15171d;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+/* Tablet */
+@media (max-width: 1024px) {
+  .hero {
+    margin: 0;
+    padding: 0 20px;
+  }
+
+  .hero-content {
+    min-height: 380px;
+    padding: 30px 35px;
+
+    gap: 15px;
+  }
+
+  .hero-text {
+    max-width: 55%;
+  }
+}
+
+
+/* Mobile */
+@media (max-width: 767px) {
+  .hero {
+    margin: 0;
+    padding: 0 15px;
+  }
+
+  .hero-content {
+    min-height: auto;
+    padding: 30px 20px;
+
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+
+    text-align: left;
+  }
+
+  .hero-text {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero-label {
+    margin-bottom: 10px;
+  }
+}
+
+/* Library */
+
+.library-section {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 50px 0 80px;
+}
+
+
+/* Header */
+
+.library-header {
+  margin-bottom: 24px;
+}
+
+.library-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.library-header p {
+  margin: 5px 0 0;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+
+.workout-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+
+.workout-card {
+  background: #15171d;
+  border: 1px solid #292d3d;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.workout-card:hover {
+  transform: translateY(-3px);
+  border-color: #dfff00;
+}
+
+
+.workout-image {
+  width: 100%;
+  height: 170px;
+  overflow: hidden;
+}
+
+.workout-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+
+.workout-info {
+  padding: 14px;
+}
+
+
+/* Muscle Tags */
+
+.muscle-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 9px;
+}
+
+.muscle-tags span {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: #dfff00;
+  color: #15171d;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+
+/* Workout Name */
+
+.workout-info h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+
+/* Equipment */
+
+.equipment {
+  margin: 4px 0 14px;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+
+.workout-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #292d3d;
+
+  color: #cbd5e1;
+  font-size: 10px;
+}
+
+.workout-meta span {
+  white-space: nowrap;
+}
+/* Footer */
+
+.footer {
+  width: 100%;
+  min-height: 80px;
+
+  padding: 0 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #11131b;
+  border-top: 1px solid #242733;
+
+  color: #ffffff;
+
+  box-sizing: border-box;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.footer-logo span {
+  font-size: 18px;
+}
+
+.footer p {
+  margin: 0;
+
+  color: #94a3b8;
+  font-size: 12px;
+}
